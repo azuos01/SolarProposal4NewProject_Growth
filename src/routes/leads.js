@@ -1,12 +1,26 @@
 'use strict';
 
 const express = require('express');
+const { buscarEnderecoPorCep } = require('../services/cepService');
 
 function leadsRouter(db) {
   const router = express.Router();
 
-  router.post('/', (req, res) => {
-    const { nome, cidade_uf, uc, telefone, email, consumo_medio_kwh, tarifa_kwh, dores, objecoes } = req.body || {};
+  router.post('/', async (req, res) => {
+    const {
+      nome,
+      cidade_uf,
+      uc,
+      telefone,
+      email,
+      consumo_medio_kwh,
+      tarifa_kwh,
+      dores,
+      objecoes,
+      cep,
+      numero,
+      complemento,
+    } = req.body || {};
 
     if (!nome || typeof nome !== 'string' || !nome.trim()) {
       return res.status(400).json({ erro: 'campo obrigatório: nome' });
@@ -20,20 +34,61 @@ function leadsRouter(db) {
       return res.status(400).json({ erro: 'tarifa_kwh deve ser numérico > 0' });
     }
 
+    // Endereço: se um CEP for informado, ele é a fonte da verdade — busca
+    // via ViaCEP e preenche logradouro/bairro/cidade/UF automaticamente
+    // (evita digitação manual e erros de endereço na proposta). Os campos
+    // de endereço podem, alternativamente, vir prontos no corpo da
+    // requisição (ex.: importação de dados já validados) sem informar cep.
+    let endereco = {
+      logradouro: req.body?.logradouro || null,
+      bairro: req.body?.bairro || null,
+      cidade: req.body?.cidade || null,
+      uf: req.body?.uf || null,
+    };
+    let cepNormalizado = null;
+    const enderecoJaCompleto = endereco.logradouro && endereco.bairro && endereco.cidade && endereco.uf;
+    if (cep && !enderecoJaCompleto) {
+      try {
+        const resultado = await buscarEnderecoPorCep(cep);
+        cepNormalizado = resultado.cep;
+        endereco = {
+          logradouro: endereco.logradouro || resultado.logradouro || null,
+          bairro: endereco.bairro || resultado.bairro || null,
+          cidade: endereco.cidade || resultado.cidade || null,
+          uf: endereco.uf || resultado.uf || null,
+        };
+      } catch (err) {
+        const status = err.status || 502;
+        return res.status(status).json({ erro: `não foi possível resolver o endereço pelo CEP: ${err.message}` });
+      }
+    }
+
+    const cidadeUfFinal = cidade_uf || (endereco.cidade && endereco.uf ? `${endereco.cidade} - ${endereco.uf}` : null);
+
     const stmt = db.prepare(`
-      INSERT INTO leads (nome, cidade_uf, uc, telefone, email, consumo_medio_kwh, tarifa_kwh, dores, objecoes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO leads (
+        nome, cidade_uf, uc, telefone, email, consumo_medio_kwh, tarifa_kwh, dores, objecoes,
+        cep, logradouro, numero, complemento, bairro, cidade, uf
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const info = stmt.run(
       nome.trim(),
-      cidade_uf || null,
+      cidadeUfFinal,
       uc || null,
       telefone || null,
       email || null,
       consumo,
       tarifa,
       dores ? JSON.stringify(dores) : null,
-      objecoes ? JSON.stringify(objecoes) : null
+      objecoes ? JSON.stringify(objecoes) : null,
+      cepNormalizado || cep || null,
+      endereco.logradouro,
+      numero || null,
+      complemento || null,
+      endereco.bairro,
+      endereco.cidade,
+      endereco.uf
     );
 
     const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(info.lastInsertRowid);

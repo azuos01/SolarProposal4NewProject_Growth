@@ -28,3 +28,8 @@ a.linklike{color:var(--orange-dk);font-weight:700;text-decoration:none;}
 .msg{font-size:0.85em;margin-top:8px;}
 .msg.err{color:#c0392b;}
 .msg.ok{color:var(--green);}
+.cep-row{display:flex;gap:8px;align-items:flex-start;}
+.cep-row input{flex:1;}
+.cep-row button{margin-top:0;white-space:nowrap;}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row-2 label{margin:10px 0 4px;}

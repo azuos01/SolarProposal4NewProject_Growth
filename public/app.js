@@ -20,10 +20,38 @@ function setMsg(id, text, ok) {
   el.className = 'msg ' + (ok ? 'ok' : 'err');
 }
 
+/** Consulta o endereço do CEP informado e autopreenche logradouro/bairro/cidade-UF. */
+async function buscarEnderecoPorCep() {
+  const cepInput = document.getElementById('leadCep');
+  const cep = cepInput.value.trim();
+  if (!cep) {
+    setMsg('cepMsg', 'informe um CEP', false);
+    return;
+  }
+  try {
+    setMsg('cepMsg', 'buscando endereço...', true);
+    const endereco = await apiFetch(`/api/cep/${encodeURIComponent(cep)}`);
+    document.getElementById('leadLogradouro').value = endereco.logradouro || '';
+    document.getElementById('leadBairro').value = endereco.bairro || '';
+    const cidadeUfField = document.getElementById('leadCidade');
+    if (endereco.cidade && endereco.uf && !cidadeUfField.value.trim()) {
+      cidadeUfField.value = `${endereco.cidade} - ${endereco.uf}`;
+    }
+    setMsg('cepMsg', `endereço encontrado: ${endereco.logradouro || '(sem logradouro)'} — ${endereco.bairro}`, true);
+  } catch (e) {
+    setMsg('cepMsg', e.message, false);
+  }
+}
+
 async function criarLead() {
   try {
     const body = {
       nome: document.getElementById('leadNome').value,
+      cep: document.getElementById('leadCep').value || undefined,
+      logradouro: document.getElementById('leadLogradouro').value || undefined,
+      numero: document.getElementById('leadNumero').value || undefined,
+      complemento: document.getElementById('leadComplemento').value || undefined,
+      bairro: document.getElementById('leadBairro').value || undefined,
       cidade_uf: document.getElementById('leadCidade').value,
       uc: document.getElementById('leadUc').value,
       consumo_medio_kwh: Number(document.getElementById('leadConsumo').value),

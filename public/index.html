@@ -22,6 +22,29 @@
     <h2>1. Cadastrar lead</h2>
     <label>Nome *</label>
     <input type="text" id="leadNome" placeholder="Nome completo">
+
+    <label>CEP</label>
+    <div class="cep-row">
+      <input type="text" id="leadCep" placeholder="14800-000" maxlength="9" inputmode="numeric">
+      <button type="button" class="secondary" onclick="buscarEnderecoPorCep()">Buscar endereço</button>
+    </div>
+    <div id="cepMsg" class="msg"></div>
+
+    <label>Logradouro</label>
+    <input type="text" id="leadLogradouro" placeholder="preenchido automaticamente pelo CEP">
+    <div class="row-2">
+      <div>
+        <label>Número</label>
+        <input type="text" id="leadNumero" placeholder="123">
+      </div>
+      <div>
+        <label>Complemento</label>
+        <input type="text" id="leadComplemento" placeholder="apto, bloco...">
+      </div>
+    </div>
+    <label>Bairro</label>
+    <input type="text" id="leadBairro" placeholder="preenchido automaticamente pelo CEP">
+
     <label>Cidade - UF</label>
     <input type="text" id="leadCidade" placeholder="Araraquara - SP">
     <label>UC (opcional)</label>
