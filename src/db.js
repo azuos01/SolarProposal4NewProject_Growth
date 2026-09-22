@@ -18,6 +18,13 @@ CREATE TABLE IF NOT EXISTS leads (
   dores TEXT,
   objecoes TEXT,
   status TEXT NOT NULL DEFAULT 'novo',
+  cep TEXT,
+  logradouro TEXT,
+  numero TEXT,
+  complemento TEXT,
+  bairro TEXT,
+  cidade TEXT,
+  uf TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -46,6 +53,22 @@ CREATE INDEX IF NOT EXISTS idx_proposals_lead ON proposals(lead_id);
 CREATE INDEX IF NOT EXISTS idx_proposals_token ON proposals(public_token);
 `;
 
+// Colunas de endereço introduzidas junto com a busca de CEP (ViaCEP).
+// Mantidas aqui também como migração idempotente, para bancos criados
+// antes dessa mudança (CREATE TABLE IF NOT EXISTS não altera tabelas
+// já existentes).
+const COLUNAS_ENDERECO_LEAD = ['cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'uf'];
+
+/** Adiciona colunas novas em `leads` que ainda não existam, sem apagar dados. */
+function migrarColunasEndereco(db) {
+  const colunasExistentes = new Set(db.prepare('PRAGMA table_info(leads)').all().map((c) => c.name));
+  for (const coluna of COLUNAS_ENDERECO_LEAD) {
+    if (!colunasExistentes.has(coluna)) {
+      db.exec(`ALTER TABLE leads ADD COLUMN ${coluna} TEXT;`);
+    }
+  }
+}
+
 /**
  * Abre (ou cria) o banco SQLite e garante o schema.
  * @param {string} dbPath - caminho do arquivo, ou ':memory:' para testes.
@@ -57,6 +80,7 @@ function openDb(dbPath) {
   const db = new DatabaseSync(dbPath);
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec(SCHEMA);
+  migrarColunasEndereco(db);
   return db;
 }
 

@@ -6,6 +6,7 @@ const { openDb } = require('./db');
 const { apiKeyAuth } = require('./middleware/auth');
 const { leadsRouter } = require('./routes/leads');
 const { proposalsRouter, publicProposalRouter } = require('./routes/proposals');
+const { cepRouter } = require('./routes/cep');
 
 /**
  * Monta a aplicação Express. Recebe o caminho do banco (permite ':memory:'
@@ -22,6 +23,7 @@ function createApp(dbPath) {
   const adminRouter = express.Router();
   adminRouter.use('/leads', leadsRouter(db));
   adminRouter.use('/', proposalsRouter(db));
+  adminRouter.use('/cep', cepRouter());
   app.use('/api', apiKeyAuth, adminRouter);
 
   // Rota pública — link que vai para o lead, sem autenticação
