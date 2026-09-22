@@ -65,8 +65,10 @@ src/
   journeyContent.js   conteúdo estruturado das 6 etapas da jornada
   db.js               schema e conexão SQLite (node:sqlite)
   middleware/auth.js  autenticação por API key (rotas administrativas)
-  routes/leads.js     CRUD de leads
+  routes/leads.js     CRUD de leads (com resolução de endereço por CEP)
   routes/proposals.js geração de propostas + rota pública do link do lead
+  routes/cep.js       rota GET /api/cep/:cep
+  services/cepService.js  consulta de endereço por CEP (ViaCEP)
   render/renderProposal.js  monta o HTML final a partir do template
   server.js           monta a aplicação Express (createApp)
 template/
@@ -77,9 +79,22 @@ assets/
   logo-solucoes-solares.png        logo oficial
 test/
   calcEngine.test.js   testes unitários do motor de cálculo (incl. regressão com números reais)
-  api.test.js          testes de integração da API (fluxo completo, validações, autenticação)
+  cepService.test.js   testes unitários da busca de endereço por CEP (fetch stubado)
+  api.test.js          testes de integração da API (fluxo completo, CEP, validações, autenticação)
 .github/workflows/ci.yml   pipeline de CI/CD
 ```
+
+### Busca de endereço por CEP
+
+O cadastro de lead aceita um **CEP** e resolve automaticamente logradouro,
+bairro, cidade e UF via [ViaCEP](https://viacep.com.br) (API pública,
+gratuita, sem autenticação) — `src/services/cepService.js`. Isso evita
+digitação manual do endereço e erros na proposta final. Se o CEP não for
+informado, os campos de endereço podem continuar sendo preenchidos
+manualmente (compatível com o comportamento anterior). O serviço tem timeout
+de 5s e erros tipados (`CepInvalidoError`, `CepNaoEncontradoError`,
+`CepServiceIndisponivelError`), mapeados para os códigos HTTP corretos
+(400/404/502) tanto na rota dedicada quanto no cadastro de lead.
 
 Duas camadas de autenticação, deliberadamente diferentes:
 
@@ -118,9 +133,11 @@ npm test
 
 Roda `node --test` sobre `test/calcEngine.test.js` (unitários, incluindo
 testes de regressão que reproduzem os números reais da proposta do André
-Luiz Martins Mode) e `test/api.test.js` (integração: fluxo completo de
-lead → proposta → link público, validações, 404s e autenticação),
-com o banco em memória — não precisa de nenhum serviço externo.
+Luiz Martins Mode), `test/cepService.test.js` (unitários do serviço de CEP,
+com o `fetch` global substituído por um stub — não depende de rede) e
+`test/api.test.js` (integração: fluxo completo de lead → proposta → link
+público, busca de CEP, validações, 404s e autenticação), com o banco em
+memória — não precisa de nenhum serviço externo nem de acesso à internet.
 
 ## Referência da API
 
@@ -128,12 +145,23 @@ Todas as rotas abaixo, exceto a pública, exigem o header `x-api-key`
 quando `API_KEY` estiver configurada.
 
 **`POST /api/leads`** — cadastra um lead.
-Corpo: `{ nome* , cidade_uf, uc, telefone, email, consumo_medio_kwh* , tarifa_kwh (padrão 0.88) }`.
-`*` obrigatório. Retorna `201` com o lead criado, ou `400` se faltar campo obrigatório.
+Corpo: `{ nome* , cep, logradouro, numero, complemento, bairro, cidade, uf, cidade_uf, uc, telefone, email, consumo_medio_kwh* , tarifa_kwh (padrão 0.88) }`.
+`*` obrigatório. Se `cep` for informado e os campos de endereço não vierem
+todos preenchidos, o servidor busca `logradouro`/`bairro`/`cidade`/`uf` no
+ViaCEP automaticamente (e, se `cidade_uf` não for informado, monta
+`"<cidade> - <uf>"` a partir do resultado). Retorna `201` com o lead
+criado; `400` se faltar campo obrigatório ou o CEP estiver mal formatado;
+`404` se o CEP não for encontrado; `502` se o serviço de CEP estiver
+indisponível.
 
 **`GET /api/leads`** — lista leads (mais recentes primeiro).
 
 **`GET /api/leads/:id`** — um lead. `404` se não existir.
+
+**`GET /api/cep/:cep`** — resolve um CEP em `{ cep, logradouro, bairro, cidade, uf }`
+via ViaCEP (usada pelo painel para autopreencher o cadastro de lead).
+`400` se o CEP estiver mal formatado (precisa ter 8 dígitos), `404` se não
+for encontrado, `502` se o serviço de CEP estiver indisponível.
 
 **`POST /api/leads/:leadId/proposals`** — gera uma nova versão de proposta
 para o lead.

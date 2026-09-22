@@ -2,6 +2,29 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [1.1.0] - 2026-09-22
+
+### Adicionado
+- Busca de endereço por CEP (`src/services/cepService.js`), via API pública
+  ViaCEP: resolve logradouro, bairro, cidade e UF a partir do CEP, com
+  timeout de 5s e erros tipados (`CepInvalidoError`, `CepNaoEncontradoError`,
+  `CepServiceIndisponivelError`).
+- Rota `GET /api/cep/:cep` (administrativa, mesma autenticação por
+  `x-api-key` das demais rotas de `/api/*`).
+- `POST /api/leads` passa a aceitar `cep` (e `numero`/`complemento`) e, se
+  os campos de endereço não vierem todos preenchidos, resolve
+  logradouro/bairro/cidade/UF automaticamente a partir do CEP; `cidade_uf`
+  é derivado do resultado quando não informado manualmente.
+- Novas colunas de endereço em `leads` (`cep`, `logradouro`, `numero`,
+  `complemento`, `bairro`, `cidade`, `uf`), com migração idempotente em
+  `src/db.js` para bancos criados antes desta versão.
+- Painel administrativo: campo de CEP com botão "Buscar endereço" que
+  autopreenche logradouro/bairro/cidade-UF antes do cadastro do lead.
+- Testes: `test/cepService.test.js` (unitários, `fetch` global stubado —
+  sem dependência de rede) e novos casos em `test/api.test.js` cobrindo a
+  rota `/api/cep/:cep` e o cadastro de lead com CEP (sucesso, CEP
+  inexistente, autenticação).
+
 ## [1.0.0] - 2026-09-22
 
 ### Adicionado
