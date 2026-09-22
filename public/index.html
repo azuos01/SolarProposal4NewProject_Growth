@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soluções Solares — Painel de Propostas</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <img src="/assets/logo-solucoes-solares.png" alt="Soluções Solares">
+  <h1>Painel interno de geração de propostas — modelo Jornada do Lead</h1>
+</header>
+
+<main>
+  <div id="apiKeyBox">
+    <strong>Chave de acesso (x-api-key)</strong> — necessária apenas se <code>API_KEY</code> estiver configurada no servidor.
+    <input type="text" id="apiKey" placeholder="deixe em branco se não houver API_KEY configurada">
+  </div>
+
+  <section class="card">
+    <h2>1. Cadastrar lead</h2>
+    <label>Nome *</label>
+    <input type="text" id="leadNome" placeholder="Nome completo">
+    <label>Cidade - UF</label>
+    <input type="text" id="leadCidade" placeholder="Araraquara - SP">
+    <label>UC (opcional)</label>
+    <input type="text" id="leadUc">
+    <label>Consumo médio mensal (kWh) *</label>
+    <input type="number" id="leadConsumo" placeholder="700">
+    <label>Tarifa de referência (R$/kWh)</label>
+    <input type="number" step="0.01" id="leadTarifa" value="0.88">
+    <button onclick="criarLead()">Cadastrar lead</button>
+    <div id="leadMsg" class="msg"></div>
+  </section>
+
+  <section class="card">
+    <h2>2. Gerar proposta</h2>
+    <label>Lead</label>
+    <select id="propLead"></select>
+    <label>Blocos de ampliação (1 microinversor + 4 módulos de 600 Wp cada)</label>
+    <input type="number" id="propBlocos" value="1" min="1">
+    <label>Rótulo da opção</label>
+    <input type="text" id="propLabel" placeholder="Ex: Opção 1 — 1 microinversor">
+    <label>Equipamentos (R$)</label>
+    <input type="number" id="propEquip" placeholder="4490">
+    <label>Serviço de instalação (R$)</label>
+    <input type="number" id="propServ" placeholder="3500">
+    <label>Demanda anual (kWh, opcional — para calcular cobertura)</label>
+    <input type="number" id="propDemanda">
+    <button onclick="gerarProposta()">Gerar proposta</button>
+    <div id="propMsg" class="msg"></div>
+  </section>
+
+  <section class="card full">
+    <h2>Leads cadastrados</h2>
+    <ul id="leadsList"></ul>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

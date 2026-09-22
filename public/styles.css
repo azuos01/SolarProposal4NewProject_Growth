@@ -1,0 +1,30 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#131f30; --orange:#e08a2c; --orange-dk:#b56a1c; --cream:#f6f1e6;
+  --card:#ffffff; --text:#2a2620; --muted:#6b6558; --border:#e6ddc9;
+  --green:#1a7a3c; --shadow:0 2px 14px rgba(30,20,5,0.07); --radius:12px;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+header{background:var(--navy);color:#fff;padding:18px 24px;display:flex;align-items:center;gap:12px;}
+header img{height:36px;}
+header h1{font-size:1.1em;font-weight:800;}
+main{max-width:980px;margin:0 auto;padding:28px 20px 60px;display:grid;gap:24px;grid-template-columns:1fr 1fr;}
+@media (max-width:820px){main{grid-template-columns:1fr;}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;}
+.card h2{font-size:1.05em;color:var(--navy);margin-bottom:14px;}
+label{display:block;font-size:0.78em;font-weight:700;color:var(--muted);margin:10px 0 4px;}
+input,select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.92em;}
+button{margin-top:16px;background:var(--orange);color:#fff;border:none;padding:10px 18px;border-radius:20px;font-weight:700;cursor:pointer;font-size:0.88em;}
+button:hover{background:var(--orange-dk);}
+button.secondary{background:var(--navy);}
+.full{grid-column:1/-1;}
+#apiKeyBox{background:#fdf3e3;border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:0.85em;grid-column:1/-1;}
+#apiKeyBox input{margin-top:6px;}
+ul#leadsList{list-style:none;font-size:0.88em;}
+ul#leadsList li{padding:10px 0;border-bottom:1px solid var(--border);}
+ul#leadsList li:last-child{border-bottom:none;}
+.pill{display:inline-block;background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:2px 9px;font-size:0.75em;margin-left:6px;}
+a.linklike{color:var(--orange-dk);font-weight:700;text-decoration:none;}
+.msg{font-size:0.85em;margin-top:8px;}
+.msg.err{color:#c0392b;}
+.msg.ok{color:var(--green);}

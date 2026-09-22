@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposta {{PROPOSTA_ID}} — {{LEAD_NOME}} · Soluções Solares</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#131f30; --navy2:#0c1622; --orange:#e08a2c; --orange-dk:#b56a1c;
+  --cream:#f6f1e6; --card:#ffffff; --text:#2a2620; --muted:#6b6558;
+  --border:#e6ddc9; --green:#1a7a3c; --blue:#2563eb;
+  --shadow:0 2px 14px rgba(30,20,5,0.07); --radius:14px;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--cream);color:var(--text);line-height:1.55;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 60px;}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1a2f22 130%);color:#fff;padding:40px 40px 30px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-30%;right:-10%;width:60%;height:160%;background:radial-gradient(circle,rgba(224,138,44,0.28) 0%,rgba(224,138,44,0) 70%);}
+.hero-inner{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 20px;}
+.brand img{height:48px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.35));margin-bottom:18px;}
+.kicker{color:var(--orange);font-size:0.78em;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.hero h1{font-size:1.9em;font-weight:800;max-width:760px;line-height:1.3;margin-bottom:14px;}
+.hero p.sub{color:#d7cdb0;max-width:700px;font-size:0.98em;margin-bottom:22px;}
+.client-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0;border-top:1px solid rgba(255,255,255,0.18);padding-top:16px;}
+.client-bar div{padding:0 16px;border-left:1px solid rgba(255,255,255,0.15);}
+.client-bar div:first-child{border-left:none;padding-left:0;}
+.client-bar .lbl{font-size:0.68em;text-transform:uppercase;letter-spacing:0.8px;color:#a99d7c;margin-bottom:3px;}
+.client-bar .val{font-weight:700;font-size:0.92em;}
+
+.journey-nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;background:#fff;border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:10;box-shadow:var(--shadow);}
+.journey-nav a{font-size:0.76em;font-weight:700;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:20px;border:1px solid var(--border);white-space:nowrap;}
+.journey-nav a:hover{border-color:var(--orange);color:var(--orange-dk);}
+
+.stage{margin-top:36px;scroll-margin-top:70px;}
+.stage-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.stage-num{background:var(--orange);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1em;flex-shrink:0;}
+.stage-fase{color:var(--orange-dk);font-size:0.72em;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.stage-head h2{font-size:1.3em;font-weight:800;color:var(--navy);}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:26px 28px;}
+.dor{background:#fdf3e3;border-left:4px solid var(--orange);border-radius:0 10px 10px 0;padding:14px 18px;font-size:0.95em;margin-bottom:14px;font-style:italic;color:#5a4326;}
+.detalhe{font-size:0.9em;color:var(--muted);margin-bottom:14px;}
+.resposta{font-size:0.95em;}
+.resposta strong.label{color:var(--green);}
+.stage-extra{margin-top:18px;}
+.cta-row{margin-top:18px;text-align:right;}
+.cta{display:inline-block;background:var(--navy);color:#fff;font-size:0.82em;font-weight:700;padding:9px 18px;border-radius:20px;}
+
+table.data{width:100%;border-collapse:collapse;font-size:0.9em;margin-top:6px;}
+table.data th{background:var(--navy);color:#f3e7c9;text-align:left;padding:10px 14px;font-weight:700;font-size:0.82em;}
+table.data td{padding:9px 14px;border-bottom:1px solid var(--border);}
+table.data tr:nth-child(even) td{background:#faf7ef;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:14px;}
+.stat{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.stat .n{font-size:1.4em;font-weight:800;color:var(--navy);}
+.stat .l{font-size:0.72em;color:var(--muted);margin-top:2px;}
+
+.footer-co{background:var(--navy);color:#cdbf98;padding:24px 28px;border-radius:var(--radius);margin-top:44px;font-size:0.85em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center;}
+.footer-co strong{color:#fff;}
+.footer-co img{height:36px;}
+.foot-note{text-align:center;font-size:0.76em;color:var(--muted);margin-top:16px;}
+.print-btn{position:fixed;top:16px;right:16px;z-index:50;background:var(--orange);color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.2);font-size:0.82em;}
+.print-btn:hover{background:var(--orange-dk);}
+@media print{
+  .no-print{display:none!important;}
+  .journey-nav{position:static;}
+  .card{box-shadow:none;border:1px solid #ddd;}
+}
+@media (max-width:640px){
+  .hero{padding:28px 20px 22px;}
+  .hero h1{font-size:1.4em;}
+  .journey-nav{overflow-x:auto;justify-content:flex-start;}
+}
+</style>
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="brand"><img src="{{LOGO_DATA_URI}}" alt="Soluções Solares"></div>
+    <div class="kicker">Proposta {{PROPOSTA_ID}} · {{OPCAO_LABEL}} · Emitida em {{DATA_EMISSAO}}</div>
+    <h1>Sua jornada até virar cliente Soluções Solares</h1>
+    <p class="sub">Esta proposta acompanha, passo a passo, o caminho da sua situação atual até a sua usina solar ligada e gerando economia real — respondendo, em cada etapa, às dúvidas mais comuns de quem está decidindo investir em energia solar.</p>
+    <div class="client-bar">
+      <div><div class="lbl">Lead</div><div class="val">{{LEAD_NOME}}</div></div>
+      <div><div class="lbl">Local</div><div class="val">{{LEAD_CIDADE}}</div></div>
+      <div><div class="lbl">Consumo médio</div><div class="val">{{CONSUMO_MEDIO}} kWh/mês</div></div>
+      <div><div class="lbl">Validade da proposta</div><div class="val">15 dias</div></div>
+    </div>
+  </div>
+</div>
+
+<nav class="journey-nav no-print">
+{{JOURNEY_NAV}}
+</nav>
+
+<div class="wrap">
+{{JOURNEY_SECTIONS}}
+
+  <div class="footer-co">
+    <img src="{{LOGO_DATA_URI}}" alt="Soluções Solares">
+    <div><strong>Soluções Solares Ltda</strong> · CNPJ 36.619.646/0001-07<br>Rua Issa Tamer, 70, CEP 14804-108, Vale do Sol — Araraquara - SP</div>
+    <div><a href="https://wa.me/5516996302896" target="_blank" style="color:#f3e7c9;text-decoration:none;font-weight:700;">📱 16 99630-2896</a><br>contato@solucoessolares.com.br</div>
+  </div>
+  <p class="foot-note">Proposta gerada automaticamente pelo aplicativo de propostas da Soluções Solares (modelo "jornada do lead"), com apoio de inteligência artificial (Claude, Anthropic) na consolidação dos dados e cálculo financeiro. A revisão técnica final e a confirmação em vistoria são de responsabilidade da integradora.</p>
+</div>
+</body>
+</html>
