@@ -2,6 +2,19 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [1.1.1] - 2026-09-23
+
+### Adicionado
+- Painel administrativo: ao selecionar um lead em "2. Gerar proposta", os
+  dados já cadastrados (consumo médio, tarifa, endereço) aparecem em um
+  resumo (`#leadPreview`) e a demanda anual é preenchida automaticamente
+  (consumo médio mensal × 12), servindo de ponto de partida para propostas
+  de teste — sem precisar redigitar os dados do lead a cada proposta. O
+  valor continua editável para simular outros cenários.
+- Após cadastrar um lead ou recarregar a lista, o seletor de lead e o
+  resumo são atualizados automaticamente, mantendo a seleção atual quando
+  possível.
+
 ## [1.1.0] - 2026-09-22
 
 ### Adicionado

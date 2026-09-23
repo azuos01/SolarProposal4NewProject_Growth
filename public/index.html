@@ -60,7 +60,8 @@
   <section class="card">
     <h2>2. Gerar proposta</h2>
     <label>Lead</label>
-    <select id="propLead"></select>
+    <select id="propLead" onchange="selecionarLead()"></select>
+    <div id="leadPreview" class="msg"></div>
     <label>Blocos de ampliação (1 microinversor + 4 módulos de 600 Wp cada)</label>
     <input type="number" id="propBlocos" value="1" min="1">
     <label>Rótulo da opção</label>
@@ -69,7 +70,7 @@
     <input type="number" id="propEquip" placeholder="4490">
     <label>Serviço de instalação (R$)</label>
     <input type="number" id="propServ" placeholder="3500">
-    <label>Demanda anual (kWh, opcional — para calcular cobertura)</label>
+    <label>Demanda anual (kWh — preenchida a partir do consumo médio do lead, para calcular cobertura)</label>
     <input type="number" id="propDemanda">
     <button onclick="gerarProposta()">Gerar proposta</button>
     <div id="propMsg" class="msg"></div>

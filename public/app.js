@@ -1,5 +1,10 @@
 'use strict';
 
+// Cache em memória dos leads carregados — usado para preencher o preview
+// e os campos de "Gerar proposta" com os dados já cadastrados do lead,
+// sem precisar redigitar consumo/endereço a cada proposta de teste.
+let leadsCache = [];
+
 function apiKey() {
   return document.getElementById('apiKey').value.trim();
 }
@@ -65,6 +70,33 @@ async function criarLead() {
   }
 }
 
+/** Mostra um resumo do lead selecionado e preenche a demanda anual com base no consumo médio cadastrado. */
+function selecionarLead() {
+  const leadId = document.getElementById('propLead').value;
+  const lead = leadsCache.find((l) => String(l.id) === String(leadId));
+  const preview = document.getElementById('leadPreview');
+  const demandaField = document.getElementById('propDemanda');
+
+  if (!lead) {
+    preview.textContent = '';
+    return;
+  }
+
+  const endereco = [lead.logradouro, lead.numero, lead.bairro, lead.cidade_uf].filter(Boolean).join(', ');
+  const partes = [
+    `Consumo médio: ${lead.consumo_medio_kwh} kWh/mês`,
+    `Tarifa: R$ ${Number(lead.tarifa_kwh).toFixed(2)}/kWh`,
+  ];
+  if (endereco) partes.push(endereco);
+  preview.textContent = `Dados do lead: ${partes.join(' · ')}`;
+  preview.className = 'msg ok';
+
+  // demanda anual = consumo médio mensal cadastrado × 12 — usa o dado real
+  // do lead como ponto de partida para a proposta de teste; o operador
+  // pode ajustar manualmente se quiser simular outro cenário.
+  demandaField.value = Math.round(lead.consumo_medio_kwh * 12);
+}
+
 async function gerarProposta() {
   try {
     const leadId = document.getElementById('propLead').value;
@@ -86,8 +118,14 @@ async function gerarProposta() {
 
 async function carregarLeads() {
   const leads = await apiFetch('/api/leads');
+  leadsCache = leads;
   const select = document.getElementById('propLead');
+  const selecaoAnterior = select.value;
   select.innerHTML = leads.map((l) => `<option value="${l.id}">#${l.id} — ${l.nome}</option>`).join('');
+  if (leads.some((l) => String(l.id) === selecaoAnterior)) {
+    select.value = selecaoAnterior;
+  }
+  selecionarLead();
 
   const list = document.getElementById('leadsList');
   list.innerHTML = '';
