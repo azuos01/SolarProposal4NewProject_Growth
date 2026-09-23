@@ -190,6 +190,38 @@ docker build -t solucoes-solares-jornada .
 docker run -p 3000:3000 -e API_KEY=troque-esta-chave -v $(pwd)/data:/app/data solucoes-solares-jornada
 ```
 
+## Produção local com Docker
+
+Para deixar o app rodando de forma persistente na sua própria máquina
+(reiniciando sozinho se o computador ou o Docker reiniciarem), use o
+`docker-compose.yml` incluído no repositório:
+
+1. Copie `.env.production.example` para `.env.production` e troque
+   `API_KEY` por uma chave forte de verdade (nunca use o valor de
+   exemplo). `DB_PATH` e `PORT` já vêm definidos no `Dockerfile` e não
+   precisam ser repetidos.
+2. Suba o app:
+   ```bash
+   docker compose up -d
+   ```
+   Isso builda a imagem, cria o container com `restart: unless-stopped`
+   (volta sozinho após reinício do Windows/Docker) e monta a pasta
+   `./data` do projeto como o volume persistente do banco SQLite — os
+   leads e propostas sobrevivem a atualizações do container.
+3. Confirme que subiu: `http://localhost:3000` no navegador, ou
+   `curl http://localhost:3000/healthz` (deve responder `{"ok":true}`).
+4. **Atualizar** para uma nova versão do código: `docker compose up -d --build`
+   — rebuilda a imagem e recria o container, sem tocar no volume de dados.
+5. **Backup**: o banco é um único arquivo, `data/app.db`. Copiá-lo
+   periodicamente (ex. tarefa agendada do Windows) já é um backup
+   suficiente para o volume de uso deste app.
+6. **Parar**: `docker compose down` (os dados em `./data` continuam no
+   disco; um `docker compose up -d` novo retoma de onde parou).
+
+Se for acessar de outros computadores da mesma rede (não só da própria
+máquina), libere a porta 3000 no firewall e acesse pelo IP local da
+máquina em vez de `localhost`.
+
 ## CI/CD
 
 `.github/workflows/ci.yml` roda em todo push/PR para `main`:

@@ -1,0 +1,18 @@
+# Soluções Solares — app de propostas (jornada do lead)
+# Uso em produção local: `docker compose up -d`
+#
+# Antes de subir pela primeira vez, copie .env.production.example para
+# .env.production e defina uma API_KEY forte (ver README.md, seção
+# "Produção local com Docker").
+
+services:
+  app:
+    build: .
+    container_name: solucoes-solares
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.production
+    volumes:
+      - ./data:/app/data
